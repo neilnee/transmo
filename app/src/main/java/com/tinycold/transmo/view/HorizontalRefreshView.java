@@ -23,7 +23,13 @@ public class HorizontalRefreshView extends ViewGroup {
     private int mWidth = 0;
     private int mHeight = 0;
     private int mMaxMoreWidth = 144;
+    private int mGap = 12;
 
+    // TODO 1、将边距参数等提取为属性；
+    //      2、支持自动轮播；
+    //      3、支持加载更多回调；
+    //      4、防御与命名;
+    //      5、检查字符串
     public HorizontalRefreshView(@NonNull Context context) {
         super(context);
         initView(context);
@@ -35,9 +41,10 @@ public class HorizontalRefreshView extends ViewGroup {
     }
 
     private void initView(@NonNull Context context) {
+        mMaxMoreWidth = getResources().getDimensionPixelSize(R.dimen.max_more);
+        mGap = getResources().getDimensionPixelSize(R.dimen.gap);
         mMoreView = new HorizontalMoreView(context);
         mMoreView.setId(mMoreViewID);
-        mMaxMoreWidth = getResources().getDimensionPixelSize(R.dimen.max_more);
         addView(mMoreView);
     }
 
@@ -63,8 +70,7 @@ public class HorizontalRefreshView extends ViewGroup {
         for (int i=0; i<count; i++) {
             View child = getChildAt(i);
             if (child.getId() == mMoreViewID) {
-                int gap = getResources().getDimensionPixelSize(R.dimen.gap);
-                child.layout(mWidth - gap, getPaddingTop(), mWidth, mHeight);
+                child.layout(mWidth - mGap, getPaddingTop(), mWidth, mHeight);
             } else {
                 if (child instanceof RecyclerView) {
                     mInnerChild = (RecyclerView) child;
@@ -115,10 +121,9 @@ public class HorizontalRefreshView extends ViewGroup {
                 }
                 mDisScroll = mPosTouchX - x;
                 if (mMoreView != null && mInnerChild != null) {
-                    int gap = getResources().getDimensionPixelSize(R.dimen.gap);
-                    float disScroll = (mDisScroll > mMaxMoreWidth ? mMaxMoreWidth : mDisScroll) - gap;
-                    mInnerChild.layout((int)-disScroll, 0, (int) (mWidth - disScroll), mHeight);
-                    mMoreView.layout((int) (mWidth - gap - disScroll), getPaddingTop(), mWidth, mHeight);
+                    float disScroll = (mDisScroll > mMaxMoreWidth ? mMaxMoreWidth : mDisScroll) - mGap;
+                    mInnerChild.layout((int)-disScroll <= 0 ? (int)-disScroll : 0, 0, (int) (mWidth - disScroll), mHeight);
+                    mMoreView.layout((int) (mWidth - mGap - disScroll), getPaddingTop(), mWidth, mHeight);
                     return true;
                 }
                 break;
@@ -127,9 +132,9 @@ public class HorizontalRefreshView extends ViewGroup {
             case MotionEvent.ACTION_CANCEL: {
                 mPosTouchX = 0;
                 if (mMoreView != null && mInnerChild != null) {
-                    int gap = getResources().getDimensionPixelSize(R.dimen.gap);
                     mInnerChild.layout(0, 0, mWidth, mHeight);
-                    mMoreView.layout(mWidth - gap, getPaddingTop(), mWidth, mHeight);
+                    mMoreView.layout(mWidth - mGap, getPaddingTop(), mWidth, mHeight);
+                    mInnerChild.smoothScrollToPosition(mInnerChild.getChildCount());
                 }
                 break;
             }

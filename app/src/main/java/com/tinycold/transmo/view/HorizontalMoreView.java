@@ -12,6 +12,7 @@ import com.tinycold.transmo.R;
 
 public class HorizontalMoreView extends FrameLayout {
 
+    // TODO 1、增加加载状态变化；
     public HorizontalMoreView(Context context) {
         super(context);
         initView(context);
