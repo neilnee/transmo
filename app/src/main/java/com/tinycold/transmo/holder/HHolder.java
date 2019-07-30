@@ -12,14 +12,12 @@ import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tinycold.transmo.R;
-import com.tinycold.transmo.view.HorizontalRefreshView;
 
 public class HHolder extends RecyclerView.ViewHolder {
 
-    private HorizontalRefreshView mRefreshView;
     private RecyclerView mRecyclerView;
     private IAdapter mIAdapter;
-    private RecyclerView.LayoutManager mLayoutManager;
+    private LinearLayoutManager mLayoutManager;
 
     public HHolder(@NonNull View itemView) {
         super(itemView);

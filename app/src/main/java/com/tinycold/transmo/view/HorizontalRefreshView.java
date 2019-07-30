@@ -8,6 +8,7 @@ import android.view.ViewGroup;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.tinycold.transmo.R;
 
@@ -15,7 +16,7 @@ public class HorizontalRefreshView extends ViewGroup {
 
     private final int mMoreViewID = 11;
     private HorizontalMoreView mMoreView;
-    private View mInnerChild = null;
+    private RecyclerView mInnerChild = null;
     private float mPosPreX;
     private float mPosTouchX;
     private float mDisScroll;
@@ -65,8 +66,10 @@ public class HorizontalRefreshView extends ViewGroup {
                 int gap = getResources().getDimensionPixelSize(R.dimen.gap);
                 child.layout(mWidth - gap, getPaddingTop(), mWidth, mHeight);
             } else {
-                mInnerChild = child;
-                mInnerChild.layout(left, top, right, bottom);
+                if (child instanceof RecyclerView) {
+                    mInnerChild = (RecyclerView) child;
+                    mInnerChild.layout(left, top, right, bottom);
+                }
             }
         }
     }
