@@ -7,20 +7,27 @@
     <com.tinycold.transmo.view.HorizontalRefreshView
         android:id="@+id/h_refreshview"
         android:layout_width="match_parent"
-        android:layout_height="120dp">
+        android:layout_height="160dp"
+        android:paddingTop="8dp">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/h_recyclerview"
             android:layout_width="match_parent"
-            android:layout_height="match_parent" />
+            android:layout_height="match_parent"
+            android:paddingLeft="8dp"
+            android:paddingRight="8dp"
+            android:overScrollMode="never"
+            android:clipToPadding="false"/>
 
     </com.tinycold.transmo.view.HorizontalRefreshView>
 
     <TextView
         android:id="@+id/h_textview"
         android:layout_width="match_parent"
-        android:layout_height="20dp"
+        android:layout_height="32dp"
         android:gravity="center"
-        android:text="H"/>
+        android:textColor="#222222"
+        android:textSize="14sp"
+        android:text="See More Top News >>"/>
 
 </LinearLayout>
