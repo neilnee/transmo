@@ -2,9 +2,11 @@ package com.tinycold.transmo.view;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -15,7 +17,7 @@ import com.tinycold.transmo.R;
 public class HorizontalRefreshView extends ViewGroup {
 
     private final int mMoreViewID = 11;
-    private HorizontalMoreView mMoreView;
+    private MoreView mMoreView;
     private RecyclerView mInnerChild = null;
     private float mPosPreX;
     private float mPosTouchX;
@@ -43,7 +45,7 @@ public class HorizontalRefreshView extends ViewGroup {
     private void initView(@NonNull Context context) {
         mMaxMoreWidth = getResources().getDimensionPixelSize(R.dimen.max_more);
         mGap = getResources().getDimensionPixelSize(R.dimen.gap);
-        mMoreView = new HorizontalMoreView(context);
+        mMoreView = new MoreView(context);
         mMoreView.setId(mMoreViewID);
         addView(mMoreView);
     }
@@ -140,6 +142,24 @@ public class HorizontalRefreshView extends ViewGroup {
             }
         }
         return super.onTouchEvent(ev);
+    }
+
+    private final class MoreView extends FrameLayout {
+
+        public MoreView(@NonNull Context context) {
+            super(context);
+            initView(context);
+        }
+
+        public MoreView(@NonNull Context context, @Nullable AttributeSet attrs) {
+            super(context, attrs);
+            initView(context);
+        }
+
+        private void initView(@NonNull Context context) {
+            LayoutInflater.from(context).inflate(R.layout.moreview, this);
+        }
+
     }
 
 }
