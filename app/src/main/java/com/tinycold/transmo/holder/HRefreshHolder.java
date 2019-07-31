@@ -1,5 +1,6 @@
 package com.tinycold.transmo.holder;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,25 +13,36 @@ import androidx.recyclerview.widget.PagerSnapHelper;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tinycold.transmo.R;
+import com.tinycold.transmo.view.HorizontalRefreshView;
 
-public class HHolder extends RecyclerView.ViewHolder {
+public class HRefreshHolder extends RecyclerView.ViewHolder {
 
+    private HorizontalRefreshView mRefreshView;
     private RecyclerView mRecyclerView;
-    private IAdapter mIAdapter;
+    private HRefreshAdapter mRefreshAdapter;
     private LinearLayoutManager mLayoutManager;
 
-    public HHolder(@NonNull View itemView) {
+    private final HorizontalRefreshView.IHorizontalRefreshListener mRefreshListener = new HorizontalRefreshView.IHorizontalRefreshListener() {
+        @Override
+        public void onLoadMore() {
+            Log.e("transmo", "loadmore");
+        }
+    };
+
+    public HRefreshHolder(@NonNull View itemView) {
         super(itemView);
+        mRefreshView = itemView.findViewById(R.id.h_refreshview);
         mRecyclerView = itemView.findViewById(R.id.h_recyclerview);
+        mRefreshView.setListener(mRefreshListener);
         mLayoutManager = new LinearLayoutManager(itemView.getContext(), LinearLayoutManager.HORIZONTAL, false);
-        mIAdapter = new IAdapter();
+        mRefreshAdapter = new HRefreshAdapter();
         mRecyclerView.setLayoutManager(mLayoutManager);
-        mRecyclerView.setAdapter(mIAdapter);
+        mRecyclerView.setAdapter(mRefreshAdapter);
         PagerSnapHelper snapHelper = new PagerSnapHelper();
         snapHelper.attachToRecyclerView(mRecyclerView);
     }
 
-    private final class IAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
+    private final class HRefreshAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder> {
 
         @NonNull
         @Override
@@ -38,7 +50,7 @@ public class HHolder extends RecyclerView.ViewHolder {
             RecyclerView.ViewHolder holder;
             switch (viewType) {
                 default: {
-                    holder = new IHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.itemview_i, parent, false));
+                    holder = new HRefreshItemHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.itemview_i, parent, false));
                     break;
                 }
             }
@@ -47,8 +59,8 @@ public class HHolder extends RecyclerView.ViewHolder {
 
         @Override
         public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
-            if (holder instanceof IHolder) {
-                ((IHolder) holder).setText(position);
+            if (holder instanceof HRefreshItemHolder) {
+                ((HRefreshItemHolder) holder).setText(position);
             }
         }
 
@@ -63,20 +75,28 @@ public class HHolder extends RecyclerView.ViewHolder {
         }
     }
 
-    private final class IHolder extends RecyclerView.ViewHolder {
+    private final class HRefreshItemHolder extends RecyclerView.ViewHolder {
 
         private TextView mTextView;
 
-        public IHolder(@NonNull View itemView) {
+        HRefreshItemHolder(@NonNull View itemView) {
             super(itemView);
             int widthPixels = itemView.getContext().getResources().getDisplayMetrics().widthPixels;
             int gap = itemView.getContext().getResources().getDimensionPixelSize(R.dimen.gap);
             int width = widthPixels - itemView.getPaddingLeft() - itemView.getPaddingRight() - gap * 2;
             itemView.setLayoutParams(new LinearLayout.LayoutParams(width, LinearLayout.LayoutParams.MATCH_PARENT));
-            mTextView = itemView.findViewById(R.id.i_textview);
+            mTextView = itemView.findViewById(R.id.more_textview);
+            mTextView.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    if (mRefreshView != null) {
+                        mRefreshView.carouselNext();
+                    }
+                }
+            });
         }
 
-        public void setText(int pos) {
+        void setText(int pos) {
             mTextView.setText("Index " + pos);
         }
 

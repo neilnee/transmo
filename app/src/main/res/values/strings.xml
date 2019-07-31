@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">transmo</string>
+    <string name="horizontal_refresh_load_more">See\nMore</string>
 </resources>

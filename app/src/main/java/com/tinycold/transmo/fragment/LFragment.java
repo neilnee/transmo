@@ -12,7 +12,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tinycold.transmo.R;
-import com.tinycold.transmo.holder.HHolder;
+import com.tinycold.transmo.holder.HRefreshHolder;
 
 public class LFragment extends Fragment {
 
@@ -47,7 +47,7 @@ public class LFragment extends Fragment {
             RecyclerView.ViewHolder holder;
             switch (viewType) {
                 case 0: {
-                    holder = new HHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.itemview_h, parent, false));
+                    holder = new HRefreshHolder(LayoutInflater.from(parent.getContext()).inflate(R.layout.itemview_h, parent, false));
                     break;
                 }
                 default: {

@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="HorizontalRefreshView">
+        <attr name="inner_gap" format="dimension" value="4dp" />
+        <attr name="max_more" format="dimension" value="48dp" />
+    </declare-styleable>
+</resources>

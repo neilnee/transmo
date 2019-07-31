@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content">
@@ -8,7 +9,9 @@
         android:id="@+id/h_refreshview"
         android:layout_width="match_parent"
         android:layout_height="160dp"
-        android:paddingTop="8dp">
+        android:paddingTop="8dp"
+        app:max_more="@dimen/max_more"
+        app:inner_gap="@dimen/gap">
 
         <androidx.recyclerview.widget.RecyclerView
             android:id="@+id/h_recyclerview"
@@ -17,7 +20,7 @@
             android:paddingLeft="8dp"
             android:paddingRight="8dp"
             android:overScrollMode="never"
-            android:clipToPadding="false"/>
+            android:clipToPadding="false" />
 
     </com.tinycold.transmo.view.HorizontalRefreshView>
 
