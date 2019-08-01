@@ -3,6 +3,7 @@ package com.tinycold.transmo.view;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.res.TypedArray;
+import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -17,6 +18,8 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.tinycold.transmo.R;
+
+import java.util.Locale;
 
 public class HorizontalRefreshView extends ViewGroup {
 
@@ -91,11 +94,15 @@ public class HorizontalRefreshView extends ViewGroup {
         for (int i=0; i<count; i++) {
             View child = getChildAt(i);
             if (child.getId() == mMoreViewID) {
-                child.layout(mWidth - mGap, getPaddingTop(), mWidth, mHeight);
+                if (isRTL()) {
+                    child.layout(mGap - mMaxMoreWidth, getPaddingTop(), mGap, mHeight);
+                } else {
+                    child.layout(mWidth - mGap, getPaddingTop(), mWidth, mHeight);
+                }
             } else {
                 if (child instanceof RecyclerView) {
                     mInnerChild = (RecyclerView) child;
-                    mInnerChild.layout(left, top, right, bottom);
+                    mInnerChild.layout(left, getPaddingTop(), right, bottom);
                 }
             }
         }
@@ -103,7 +110,11 @@ public class HorizontalRefreshView extends ViewGroup {
 
     @Override
     public boolean canScrollHorizontally(int direction) {
-        return direction > 0;
+        if (isRTL()) {
+            return direction < 0;
+        } else {
+            return direction > 0;
+        }
     }
 
     @Override
@@ -113,8 +124,8 @@ public class HorizontalRefreshView extends ViewGroup {
                 mPosPreX = ev.getX();
                 break;
             case MotionEvent.ACTION_MOVE:
-                if (mPosPreX - ev.getX() > 0) {
-                    if (mInnerChild != null && !mInnerChild.canScrollHorizontally(1)) {
+                if (isRTL() ? mPosPreX - ev.getX() < 0 : mPosPreX - ev.getX() > 0) {
+                    if (mInnerChild != null && !mInnerChild.canScrollHorizontally(isRTL() ? -1 : 1)) {
                         if (getParent() != null) {
                             getParent().requestDisallowInterceptTouchEvent(true);
                         }
@@ -142,12 +153,21 @@ public class HorizontalRefreshView extends ViewGroup {
                     mPosTouchX = x;
                     break;
                 }
-                mDisScroll = mPosTouchX - x;
+                if (isRTL()) {
+                    mDisScroll = x - mPosTouchX;
+                } else {
+                    mDisScroll = mPosTouchX - x;
+                }
                 if (mMoreView != null && mInnerChild != null) {
                     mLoadMore = mDisScroll >= mMaxMoreWidth;
-                    float disScroll = (mLoadMore ? mMaxMoreWidth : mDisScroll) - mGap;
-                    mInnerChild.layout((int)-disScroll <= 0 ? (int)-disScroll : 0, 0, (int) (mWidth - disScroll), mHeight);
-                    mMoreView.layout((int) (mWidth - mGap - disScroll), getPaddingTop(), mWidth, mHeight);
+                    float disScroll = (mLoadMore ? mMaxMoreWidth : mDisScroll);
+                    if (isRTL()) {
+                        mInnerChild.layout((int) disScroll, getPaddingTop(), (int) (mWidth + disScroll), mHeight);
+                        mMoreView.layout((int) (disScroll - mGap - mMaxMoreWidth), getPaddingTop(), (int) (disScroll - mGap), mHeight);
+                    } else {
+                        mInnerChild.layout((int) -disScroll, getPaddingTop(), (int) (mWidth - disScroll), mHeight);
+                        mMoreView.layout((int) (mWidth - disScroll), getPaddingTop(), mWidth, mHeight);
+                    }
                     mMoreView.showLoadMord(mLoadMore);
                     return true;
                 }
@@ -157,7 +177,11 @@ public class HorizontalRefreshView extends ViewGroup {
             case MotionEvent.ACTION_CANCEL: {
                 if (mMoreView != null && mInnerChild != null) {
                     mInnerChild.layout(0, 0, mWidth, mHeight);
-                    mMoreView.layout(mWidth - mGap, getPaddingTop(), mWidth, mHeight);
+                    if (isRTL()) {
+                        mMoreView.layout(mGap - mMaxMoreWidth, getPaddingTop(), mGap, mHeight);
+                    } else {
+                        mMoreView.layout(mWidth - mGap, getPaddingTop(), mWidth, mHeight);
+                    }
                     if (mInnerChild.getLayoutManager() != null) {
                         mInnerChild.smoothScrollToPosition(mInnerChild.getLayoutManager().getItemCount() - 1);
                     }
@@ -188,6 +212,10 @@ public class HorizontalRefreshView extends ViewGroup {
             pos = pos >= layoutManager.getItemCount() - 1 ? 0 : pos + 1;
             mInnerChild.smoothScrollToPosition(pos);
         }
+    }
+
+    private boolean isRTL() {
+        return TextUtils.getLayoutDirectionFromLocale(Locale.getDefault()) == View.LAYOUT_DIRECTION_RTL;
     }
 
     private final class MoreView extends FrameLayout {
